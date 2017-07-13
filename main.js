@@ -4,7 +4,6 @@ var beer;
 var techno;
 var needleImage;
 var burp;
-
 var mainSong;
 var rainbow;
 var giggle;
@@ -13,13 +12,13 @@ var pill;
 var health = 100;
 var points = 0; 
 var score = "Score : " +  points + ".";
-var drinkSound ,
-     myCallback = function() {
-           console.info("sound finished");
-       };
+var drinkSound;
+var cell;
+
 
 function preload(){
   drinkSound = loadSound("sound/drink.mp3");
+  cell = loadImage("img/cell.jpg");
   giggle = loadSound("sound/giggle.mp3");
   needleImage = loadImage("img/drugged.png");
   pill = loadImage("img/pill.png");
@@ -31,13 +30,6 @@ function preload(){
   techno = loadSound("sound/techno.mp3");
 }
 
-function playTechno(){
-	if(!techno.isPlaying()){
-		techno.play();
-	}
-	var body = document.getElementsByTagName('body')[0];
-	body.style.backgroundImage = "url('img/rave.jpg')";
-}
 function setup() {
   createCanvas(800,400);
   lukas = new Lukas();
@@ -48,14 +40,11 @@ function setup() {
   
 }
 
-function end (){
-
-}
 function draw() {
+
   background(0,0,0); 
 
   if(points >= lvl1){
-  	
   	if(rainbow.loaded()){
   		background(rainbow);
   		rainbow.play();
@@ -64,21 +53,7 @@ function draw() {
   	drinkSound = giggle;
   	mainSong.stop();
   	playTechno();
-    
-
-  	
   }
-
-  fill(255);
-
-  textAlign(CENTER);
-  text("HARTNIKORAMA, BEERS INCREASE SCORE, NEEDLES DECREASE HEALTH",width/2, 20);
-  textAlign(RIGHT,TOP);
-  text("Score : " + points, 750, 350);
-  textAlign(LEFT,BOTTOM);
-  text("Health : " + health, 30, 370);
-  drawSprites();
-
   if(beer != null){
   	if(lukas.collide(beer)){
   		drinkSound.play();
@@ -86,10 +61,8 @@ function draw() {
   		beer = null;
   		beer = new Beer();
   		increaseScore();
-
   	}
   }
-
   if((needle != null && points > lvl1)){
   		if(lukas.collide(needle)){
   			needle.remove();
@@ -97,9 +70,23 @@ function draw() {
   			needle = new Needle();
   			decreaseHealth();
   		}
-  	}
-  
+  	} 
+  if((health <= 0)){
+    gameOver();
+  } 
+
+  drawSprites();
+
+  //text on screen  
+  fill(255);
+  textAlign(CENTER);
+  text("HARTNIKORAMA, BEERS INCREASE SCORE, NEEDLES DECREASE HEALTH",width/2, 20);
+  textAlign(RIGHT,TOP);
+  text("Score : " + points, 750, 350);
+  textAlign(LEFT,BOTTOM);
+  text("Health : " + health, 30, 370);
 }
+
 function keyPressed() {
   if (keyCode == RIGHT_ARROW) {
    lukas.setSpeed(3.0, 0);
@@ -119,35 +106,12 @@ function keyPressed() {
   return false;
 }
 
-function Beer(){
-
-	 
-	beer = createSprite(getRandomX(),getRandomY());
-	beer.addImage(beerImage);
-	return beer;
-}
-
-function Lukas(){
-	sprite = createSprite(120,120);
-	sprite.addImage(img);
-
-
-	return sprite;
-}
-
 function increaseScore(){
 	points++;
 	console.log("inc");
 	if (points % 3 == 0 && points < lvl1){
 		burp.play();
 	}
-	
-}
-
-function Needle(){
-	sprite = createSprite(getRandomX(), getRandomY());
-	sprite.addImage(needleImage);
-	return sprite;
 }
 
 function getRandomX(){
@@ -160,4 +124,23 @@ function getRandomY(){
 
 function decreaseHealth(){
 	health -= 10;
+}
+
+function playTechno(){
+  if(!techno.isPlaying()){
+    techno.play();
+  }
+  var body = document.getElementsByTagName('body')[0];
+  body.style.backgroundImage = "url('img/rave.jpg')";
+}
+
+function gameOver(){
+  fill(255,0,0);
+  background(cell);
+  textAlign(CENTER, CENTER);
+  text("GAME OVER", width/2,height/2);
+  this.allSprites.remove();
+
+  
+
 }
